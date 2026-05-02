@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Detail — JobPortal AI</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar" id="navbar"></header>
+  <main class="main-content">
+    <div id="jobDetail"><div class="spinner"></div></div>
+  </main>
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!api.requireAuth()) return;
+      renderNavbar('jobs');
+      const id = new URLSearchParams(window.location.search).get('id');
+      if (!id) { window.location.href = 'jobs.html'; return; }
+      try {
+        const j = await api.get(`/jobs/${id}`);
+        const typeColors = { FULL_TIME:'green', PART_TIME:'blue', INTERNSHIP:'purple', CONTRACT:'orange' };
+        document.getElementById('jobDetail').innerHTML = `
+          <a href="jobs.html" style="color:var(--text-muted);font-size:0.9rem">← Back to Jobs</a>
+          <div class="card" style="margin-top:1rem">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem">
+              <div>
+                <h1 style="font-size:1.8rem;font-weight:800;margin-bottom:0.5rem">${j.title}</h1>
+                <p style="color:var(--accent-cyan);font-size:1.1rem;font-weight:500">${j.company}</p>
+                <p style="color:var(--text-muted);margin-top:4px">📍 ${j.location || 'Remote'}</p>
+              </div>
+              <div style="text-align:right">
+                <span class="badge badge-${typeColors[j.jobType]||'blue'}" style="font-size:0.85rem;padding:6px 16px">${j.jobType.replace('_',' ')}</span>
+                <p style="color:var(--accent-green);font-weight:700;margin-top:8px;font-size:1.1rem">${j.salaryRange||''}</p>
+              </div>
+            </div>
+            <hr style="border:none;border-top:1px solid var(--border-glass);margin:1.5rem 0">
+            <h3 style="margin-bottom:0.75rem">Job Description</h3>
+            <p style="color:var(--text-secondary);line-height:1.8;white-space:pre-line">${j.description}</p>
+            <h3 style="margin:1.5rem 0 0.75rem">Required Skills</h3>
+            <div class="job-skills">${j.requiredSkills.split(',').map(s=>`<span class="skill-tag">${s.trim()}</span>`).join('')}</div>
+            <div style="margin-top:2rem;display:flex;gap:12px">
+              <button class="btn btn-primary btn-lg" onclick="applyNow(${j.id})">🚀 Apply Now</button>
+              <a href="jobs.html" class="btn btn-secondary btn-lg">Browse More</a>
+            </div>
+          </div>`;
+      } catch (err) { showToast(err.message, 'error'); }
+    });
+    async function applyNow(jobId) {
+      if (!confirm('Apply to this job?')) return;
+      try {
+        const r = await api.post('/applications/apply', { jobId });
+        showToast(`Applied! Match: ${Math.round(r.matchScore)}%`, 'success');
+        setTimeout(() => { window.location.href = `match-results.html?id=${r.id}`; }, 1000);
+      } catch (err) { showToast(err.message, 'error'); }
+    }
+  </script>
+</body>
+</html>

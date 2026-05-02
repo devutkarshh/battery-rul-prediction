@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — JobPortal AI</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar" id="navbar"></header>
+  <main class="main-content">
+    <div class="page-header">
+      <h1 id="welcomeMsg">Welcome back</h1>
+      <p>Here's an overview of your job search activity</p>
+    </div>
+    <div class="stats-grid" id="statsGrid"></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Recent Applications</span></div>
+        <div id="recentApps"><div class="spinner"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quick Actions</span></div>
+        <div style="display:flex;flex-direction:column;gap:12px;padding:1rem 0">
+          <a href="jobs.html" class="btn btn-primary btn-block">🔍 Browse Jobs</a>
+          <a href="resume.html" class="btn btn-secondary btn-block">📄 Upload Resume</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

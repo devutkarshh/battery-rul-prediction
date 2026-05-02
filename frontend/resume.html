@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Upload — JobPortal AI</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar" id="navbar"></header>
+  <main class="main-content">
+    <div class="page-header"><h1>Resume Management</h1><p>Upload your resume for AI-powered job matching</p></div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Upload Resume</span></div>
+        <form id="uploadForm">
+          <div class="upload-zone" id="dropZone">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <h3>Drag & Drop your resume here</h3>
+            <p>or click to browse — PDF, DOCX (max 10MB)</p>
+            <input type="file" id="fileInput" accept=".pdf,.docx" style="display:none">
+          </div>
+          <div id="fileInfo" style="display:none;margin-top:1rem;padding:1rem;background:var(--bg-glass);border-radius:var(--radius-sm)">
+            <span id="fileName" style="font-weight:600"></span>
+            <span id="fileSize" style="color:var(--text-muted);margin-left:10px"></span>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" style="margin-top:1rem" id="uploadBtn" disabled>Upload Resume</button>
+        </form>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Current Resume</span></div>
+        <div id="resumeInfo"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </main>
+  <script src="js/api.js"></script>
+  <script src="js/resume.js"></script>
+</body>
+</html>

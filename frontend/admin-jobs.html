@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Jobs — JobPortal AI</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="navbar" id="navbar"></header>
+  <main class="main-content">
+    <div class="page-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem">
+      <div><h1>Manage Jobs</h1><p>Create, edit, and delete job postings</p></div>
+      <button class="btn btn-primary" onclick="openModal()">➕ Add New Job</button>
+    </div>
+    <div id="jobsList"><div class="spinner"></div></div>
+  </main>
+
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add New Job</h2>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <form id="jobForm">
+        <input type="hidden" id="jobId">
+        <div class="form-group"><label class="form-label">Title</label><input type="text" id="title" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Company</label><input type="text" id="company" class="form-control" required></div>
+        <div class="form-group"><label class="form-label">Location</label><input type="text" id="location" class="form-control" placeholder="e.g. Bangalore, India"></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea id="description" class="form-control" rows="4" required></textarea></div>
+        <div class="form-group"><label class="form-label">Required Skills (comma-separated)</label><input type="text" id="requiredSkills" class="form-control" required placeholder="Java, Spring Boot, MySQL..."></div>
+        <div class="grid-2" style="gap:1rem">
+          <div class="form-group"><label class="form-label">Salary Range</label><input type="text" id="salaryRange" class="form-control" placeholder="₹15-25 LPA"></div>
+          <div class="form-group"><label class="form-label">Job Type</label>
+            <select id="jobType" class="form-control">
+              <option value="FULL_TIME">Full Time</option><option value="PART_TIME">Part Time</option>
+              <option value="INTERNSHIP">Internship</option><option value="CONTRACT">Contract</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" id="saveBtn">Save Job</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!api.requireAuth() || !api.isAdmin()) { window.location.href='index.html'; return; }
+      renderNavbar('admin-jobs');
+      loadJobs();
+    });
+
+    async function loadJobs() {
+      const c = document.getElementById('jobsList');
+      try {
+        const jobs = await api.get('/jobs');
+        if (!jobs.length) { c.innerHTML = '<div class="empty-state"><h3>No jobs posted</h3></div>'; return; }
+        c.innerHTML = `<div class="table-container"><table>
+          <thead><tr><th>Title</th><th>Company</th><th>Type</th><th>Applicants</th><th>Posted</th><th>Actions</th></tr></thead>
+          <tbody>${jobs.map(j => `<tr>
+            <td><strong>${j.title}</strong></td><td>${j.company}</td>
+            <td><span class="badge badge-blue">${j.jobType.replace('_',' ')}</span></td>
+            <td>${j.applicantCount}</td>
+            <td style="color:var(--text-muted)">${new Date(j.createdAt).toLocaleDateString()}</td>
+            <td><button class="btn btn-secondary btn-sm" onclick='editJob(${JSON.stringify(j)})'>Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteJob(${j.id})" style="margin-left:6px">Delete</button></td>
+          </tr>`).join('')}</tbody></table></div>`;
+      } catch (err) { showToast(err.message, 'error'); }
+    }
+
+    function openModal() {
+      document.getElementById('modalTitle').textContent = 'Add New Job';
+      document.getElementById('jobForm').reset();
+      document.getElementById('jobId').value = '';
+      document.getElementById('jobModal').classList.add('active');
+    }
+
+    function editJob(j) {
+      document.getElementById('modalTitle').textContent = 'Edit Job';
+      document.getElementById('jobId').value = j.id;
+      document.getElementById('title').value = j.title;
+      document.getElementById('company').value = j.company;
+      document.getElementById('location').value = j.location || '';
+      document.getElementById('description').value = j.description;
+      document.getElementById('requiredSkills').value = j.requiredSkills;
+      document.getElementById('salaryRange').value = j.salaryRange || '';
+      document.getElementById('jobType').value = j.jobType;
+      document.getElementById('jobModal').classList.add('active');
+    }
+
+    function closeModal() { document.getElementById('jobModal').classList.remove('active'); }
+
+    document.getElementById('jobForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('jobId').value;
+      const data = {
+        title: document.getElementById('title').value,
+        company: document.getElementById('company').value,
+        location: document.getElementById('location').value,
+        description: document.getElementById('description').value,
+        requiredSkills: document.getElementById('requiredSkills').value,
+        salaryRange: document.getElementById('salaryRange').value,
+        jobType: document.getElementById('jobType').value
+      };
+      try {
+        if (id) { await api.put(`/jobs/${id}`, data); showToast('Job updated!', 'success'); }
+        else { await api.post('/jobs', data); showToast('Job created!', 'success'); }
+        closeModal(); loadJobs();
+      } catch (err) { showToast(err.message, 'error'); }
+    });
+
+    async function deleteJob(id) {
+      if (!confirm('Delete this job? This cannot be undone.')) return;
+      try { await api.delete(`/jobs/${id}`); showToast('Job deleted', 'success'); loadJobs(); }
+      catch (err) { showToast(err.message, 'error'); }
+    }
+  </script>
+</body>
+</html>
