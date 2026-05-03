@@ -19,7 +19,7 @@
     <description>Spring Boot backend for AI-Powered Job Portal</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>25</java.version>
         <jjwt.version>0.12.6</jjwt.version>
     </properties>
 
