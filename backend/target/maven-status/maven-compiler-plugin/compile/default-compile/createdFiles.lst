@@ -5,6 +5,7 @@ com\jobportal\dto\JobRequest.class
 com\jobportal\repository\UserRepository.class
 com\jobportal\repository\JobRepository.class
 com\jobportal\service\JobService.class
+com\jobportal\config\DataInitializer.class
 com\jobportal\config\AppConfig.class
 com\jobportal\exception\GlobalExceptionHandler.class
 com\jobportal\controller\AuthController.class
