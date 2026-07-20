@@ -4,7 +4,7 @@ BATTERY REMAINING USEFUL LIFE (RUL) PREDICTION MODEL
 Hybrid Physics-Informed Machine Learning Framework
 =============================================================================
 
-Author  : Utkarsh Mishra and MD Shamshad (Internship Project)
+Author  : Utkarsh Mishra (Internship Project)
 Dataset : NASA Battery Dataset (B5, B6, B7)
 Task    : Predict RUL from physical battery measurements
 
@@ -531,7 +531,7 @@ sns.set_theme(style='whitegrid')
 fig = plt.figure(figsize=(22, 26), facecolor='white')
 fig.suptitle(
     'Battery RUL Prediction — Hybrid Physics-Informed ML\n'
-    'Internship Project  |  Avijnan Purkait',
+    'Internship Project  |  Utkarsh Mishra',
     fontsize=20, fontweight='bold', y=0.98
 )
 gs = gridspec.GridSpec(5, 3, figure=fig, hspace=0.48, wspace=0.35,
